@@ -1,0 +1,43 @@
+CRIAR USER
+Install-Module Microsoft.Graph -Scope CurrentUser > Instalar o Módulo do Microsfot Graph
+	
+Connect-MgGraph -scopes "user.readwrite.all, group.readwrite.all" > Conecta o Microsoft via conta da Microsofot pelo Office.com
+
+> 
+$PWProfile = @{
+   Password = "Pa55w.rd";
+   ForceChangePasswordNextSignIn = $false
+  }
+  
+> Criar um novo user
+New-MgUser `
+  -DisplayName "Cody Godinez" `
+  -GivenName "Cody" -Surname "Godinez" `
+  -MailNickname "cgodinez" `
+  -UsageLocation "US" `
+  -UserPrincipalName "cgodinez@M365x67596568.onmicrosoft.com" `
+  -PasswordProfile $PWProfile -AccountEnabled `
+  -Department "Sales" -JobTitle "Sales Rep"
+  
+ > Confirmar users no Entra ID
+ Get-MgUser
+ ==================================================================================
+ CRIAR GRUPOS
+
+> Criar Grupo 
+ New-MgGroup -DisplayName "Contoso_Sales" -Description "Contoso Sales team users" -MailEnabled:$false -Mailnickname "Contoso_Sales" -SecurityEnabled
+
+> Verifica Grupos criados
+Get-MgGroup
+
+> Cria uma variavel para o Grupo
+$group = Get-MgGroup | Where-Object {$_.DisplayName -eq "Contoso_Sales"}
+
+> Outra variavel para um user
+$user = Get-MgUser | Where-Object {$_.DisplayName -eq "Cody Godinez"}
+
+>Adicionando User ao Grupo via variavel	
+New-MgGroupMember -GroupId $group.Id -DirectoryObjectId $user.Id
+
+> 
+Get-MgGroupMember -GroupId $group.Id | FL
